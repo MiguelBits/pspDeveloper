@@ -1,6 +1,9 @@
 #include <pspkernel.h>
 #include <pspdebug.h>
 #include <pspctrl.h>
+#include <pspdisplay.h>
+#include <include/gfx.hpp>
+
 PSP_MODULE_INFO("Tutorial",0,1,0);
 
 //exit function
@@ -25,26 +28,42 @@ void setupCallbacks(){
 }
 
 auto main() -> int {
-    pspDebugScreenInit();
+ 
+    GFX::init();
+    GFX::clear(0xFFFFCA82);
+    GFX::drawRect(10,10,30,30,0xFF00FFFF);
+    GFX::swapBuffers();
 
-    sceCtrlSetSamplingCycle(0);
+    SceCtrlData currentCtrlData;
+    SceCtrlData oldCtrlData;
+
+    setupCallbacks();
     sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
 
-    SceCtrlData ctrlData;
+    int x = 10;
+    int y = 10;
 
     while(true){
-        sceCtrlReadBufferPositive(&ctrlData,1);
-        if(ctrlData.Buttons & PSP_CTRL_UP)		    pspDebugScreenPrintf("Up"); 
-        if(ctrlData.Buttons & PSP_CTRL_DOWN)	    pspDebugScreenPrintf("Down"); 
-        if(ctrlData.Buttons & PSP_CTRL_RIGHT)	    pspDebugScreenPrintf("Right"); 
-        if(ctrlData.Buttons & PSP_CTRL_LEFT)	    pspDebugScreenPrintf("Left"); 
-
-        if(ctrlData.Buttons & PSP_CTRL_CROSS)	    pspDebugScreenPrintf("Cross"); 
-        if(ctrlData.Buttons & PSP_CTRL_CIRCLE)	    pspDebugScreenPrintf("Circle"); 
-        if(ctrlData.Buttons & PSP_CTRL_SQUARE)	    pspDebugScreenPrintf("Square"); 
-        if(ctrlData.Buttons & PSP_CTRL_TRIANGLE)    pspDebugScreenPrintf("Triangle"); 
-
-        if(ctrlData.Buttons & PSP_CTRL_RTRIGGER)	pspDebugScreenPrintf("R-Trigger");
-        if(ctrlData.Buttons & PSP_CTRL_LTRIGGER)	pspDebugScreenPrintf("L-Trigger");
+        oldCtrlData = currentCtrlData;
+        sceCtrlReadBufferPositive(&currentCtrlData, 1);
+        if (oldCtrlData.Buttons != currentCtrlData.Buttons) {
+        /* Your button check/controls code goes here */
+            if(currentCtrlData.Buttons & PSP_CTRL_DOWN){
+                x += 10;
+                y += 10;
+                GFX::clear(0xFFFFCA82);
+                GFX::drawRect(10,y,30,30,0xFF00FFFF);
+                GFX::swapBuffers();
+            }
+            if(currentCtrlData.Buttons & PSP_CTRL_UP){
+                x -= 10;
+                y -= 10;
+                GFX::clear(0xFFFFCA82);
+                GFX::drawRect(10,y,30,30,0xFF00FFFF);
+                GFX::swapBuffers();
+            }
+        }
+        
+        sceDisplayWaitVblankStart();
     }
 }

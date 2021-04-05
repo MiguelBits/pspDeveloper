@@ -1,5 +1,5 @@
 TARGET = Tutorial
-OBJS = src/main.o 
+OBJS = src/main.o src/gfx.o
 
 CFLAGS =
 CXXFLAGS = $(CFLAGS) -std=c++14 -fno-rtti
